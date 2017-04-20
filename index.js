@@ -48,10 +48,10 @@ compilarButton.addEventListener('click', function(e) {
 function analisar(anterior, fita, i) {
   var cabecote = fita[i];
   console.log('[cabecote]  ', cabecote, ehAspa(cabecote), ehLetra(cabecote));
-  console.log('[anterior]  ', anterior);
+  console.log('[anterior]  ', anterior, !ehComentario(cabecote));
   if (ehEOF(cabecote))
     return;
-  if (!ehEspaco(cabecote))
+  if (!ehEspaco(cabecote) || anterior == 'COMENTARIO_BLOCO')
   {
     if (!ehQuebraLinha(cabecote))
     {
@@ -69,6 +69,12 @@ function analisar(anterior, fita, i) {
 
   if (anterior == 'LITERAL' && !ehAspa(cabecote)) {
     return analisar('LITERAL', fita, ++i);
+  }
+  else if (anterior == 'COMENTARIO_LINHA' && !ehQuebraLinha(cabecote)) {
+    return analisar('COMENTARIO_LINHA', fita, ++i);
+  }
+  else if (anterior == 'COMENTARIO_BLOCO' && cabecote !== '-') {
+    return analisar('COMENTARIO_BLOCO', fita, ++i);
   }
   else if (ehLetra(cabecote)) {
     if (anterior == false || anterior == 'RESEVIDENT')
@@ -100,8 +106,24 @@ function analisar(anterior, fita, i) {
     }
   }
   else if (ehSinal(cabecote)) {
-    console.warn('SIN', cabecote, ehComposto(cabecote));
-    if (!ehComposto(cabecote) || anterior == 'SINAL')
+    console.warn('SIN', cabecote, token, '//', anterior, ehComposto(cabecote));
+
+    if (ehComentario(cabecote) && (token == '--')) 
+    {
+      return analisar('COMENTARIO_LINHA', fita, ++i);
+    }
+    else if (ehComentario(cabecote) && (token == '-*' || cabecote == '-'))
+    {
+      if (anterior == 'COMENTARIO_BLOCO')
+      {
+        adicionarToken('COMENTARIO_BLOCO');
+      }
+      else
+      {
+        return analisar('COMENTARIO_BLOCO', fita, ++i);
+      }
+    }
+    else if (!ehComposto(cabecote) || anterior == 'SINAL')
     {
       adicionarToken('SINAL');
     }
@@ -121,6 +143,10 @@ function fimAnalisar(anterior, cabecote) {
   anterior && console.error('VRAY', anterior, cabecote);
   if (anterior == 'INTEIRO') {
     adicionarToken('INTEIRO');
+  }
+  if (anterior == 'COMENTARIO_LINHA')
+  {
+    adicionarToken('COMENTARIO_LINHA');
   }
   if (anterior == 'RESEVIDENT') {
     if (!ehLetra(cabecote))
@@ -150,6 +176,12 @@ function adicionarToken(tipo) {
       break;
     case 'IDENTIFICADOR':
       codigo = ehPalavraReservada('ident');
+      break;
+    case 'COMENTARIO_LINHA':
+      codigo = 'COMENTARIO_LINHA';
+      break;
+    case 'COMENTARIO_BLOCO':
+      codigo = 'COMENTARIO_BLOCO';
       break;
     case 'PALAVRA_RESERVADA':
     default:
@@ -213,12 +245,16 @@ function ehComposto(valor) {
   return false;
 }
 
+function ehComentario(valor) {
+  return valor === '-' || valor === '*';
+}
+
 var alfabeto = ["a","b","c","d","e","f","g","h","i","j", 
   "k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
 var numeros = ["0","1","2","3","4","5","6","7","8","9"];
 var sinais = [",",";","(",")","{","}","[","]","+",
         "-","*","/","=","<",">","!","&","|"];
-var compostos = ["<",">", ":"];
+var compostos = ["<",">", ":", "-"];
 var palavrasReservada = [];
 palavrasReservada[1] = 'write';
 palavrasReservada[2] = 'while';
