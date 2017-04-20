@@ -27,6 +27,7 @@ compilarButton.addEventListener('click', function(e) {
   fita = codigoTextArea.value.trim().split('');
   console.log('[fita]  ', fita);
   analisar(false, fita, 0);
+  resultadoTable.innerHTML = "";
   for (var i = 0; i < tokens.length; i++) {
     var tk = tokens[i];
     var row = resultadoTable.insertRow(i);
@@ -95,10 +96,19 @@ function analisar(anterior, fita, i) {
       adicionarToken('LITERAL');
     }
   }
+  else if (ehSeparadorDecimal(cabecote)) {
+    if (anterior == 'INTEIRO')
+    {
+      return analisar('FLOAT', fita, ++i);
+    }
+  }
   else if (ehNumero(cabecote)) {
     if (anterior == false || anterior == 'INTEIRO')
     {
       return analisar('INTEIRO', fita, ++i);
+    }
+    else if (anterior == 'FLOAT') {
+      return analisar('FLOAT', fita, ++i);
     }
     else if (anterior == 'RESEVIDENT')
     {
@@ -141,6 +151,9 @@ function analisar(anterior, fita, i) {
 
 function fimAnalisar(anterior, cabecote) {
   anterior && console.error('VRAY', anterior, cabecote);
+  if (anterior == 'FLOAT') {
+    adicionarToken('FLOAT');
+  }
   if (anterior == 'INTEIRO') {
     adicionarToken('INTEIRO');
   }
@@ -247,6 +260,10 @@ function ehComposto(valor) {
 
 function ehComentario(valor) {
   return valor === '-' || valor === '*';
+}
+
+function ehSeparadorDecimal(valor) {
+  return valor === '.';
 }
 
 var alfabeto = ["a","b","c","d","e","f","g","h","i","j", 
