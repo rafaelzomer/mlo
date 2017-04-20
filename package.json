@@ -1,0 +1,19 @@
+{
+  "name": "mlo",
+  "version": "1.0.0",
+  "description": "mlo is a language based on javascript",
+  "main": "Gulpfile.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "mlo",
+    "language",
+    "unesc"
+  ],
+  "author": "rafaelzomer@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
