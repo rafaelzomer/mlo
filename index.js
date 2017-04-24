@@ -14,7 +14,7 @@ arquivo.addEventListener('change', function(e) {
     reader.onload = function(e) {
       codigoTextArea.innerText = reader.result;
     }
-    reader.readAsText(file);    
+    reader.readAsText(file);
   } else {
     alert("Seu browser não suporta arquivos locais");
   }
@@ -50,16 +50,17 @@ function analisar(anterior, fita, i) {
   var cabecote = fita[i];
   console.log('[cabecote]  ', cabecote, ehAspa(cabecote), ehLetra(cabecote));
   console.log('[anterior]  ', anterior, !ehComentario(cabecote));
-  if (ehEOF(cabecote))
-    return;
-  if (!ehEspaco(cabecote) || anterior == 'COMENTARIO_BLOCO')
+
+  if ((!ehEOF(cabecote) && !ehEspaco(cabecote)) || anterior == 'COMENTARIO_BLOCO' || anterior == 'LITERAL')
   {
     if (!ehQuebraLinha(cabecote))
     {
-      if (ehSinal(cabecote))
+
+      if (ehSinal(cabecote) || ehEOF(cabecote))
       {
         fimAnalisar(anterior, cabecote);
       }
+      console.log('aff', token, cabecote);
       token += cabecote;
     }
     else
@@ -85,9 +86,8 @@ function analisar(anterior, fita, i) {
     else if(anterior == 'LITERAL') {
       return analisar('LITERAL', fita, ++i);
     }
-  } 
+  }
   else if (ehAspa(cabecote)) {
-    console.log('CEI');
     if (anterior !== 'LITERAL') {
       return analisar('LITERAL', fita, ++i);
     }
@@ -116,13 +116,12 @@ function analisar(anterior, fita, i) {
     }
   }
   else if (ehSinal(cabecote)) {
-    console.warn('SIN', cabecote, token, '//', anterior, ehComposto(cabecote));
 
-    if (ehComentario(cabecote) && (token == '--')) 
+    if (ehComentario(cabecote) && (token == '--'))
     {
       return analisar('COMENTARIO_LINHA', fita, ++i);
     }
-    else if (ehComentario(cabecote) && (token == '-*' || cabecote == '-'))
+    else if (ehComentario(cabecote) && ((anterior == false && token == '-*') || (anterior == 'COMENTARIO_BLOCO' &&  cabecote == '-')))
     {
       if (anterior == 'COMENTARIO_BLOCO')
       {
@@ -146,11 +145,16 @@ function analisar(anterior, fita, i) {
   {
     fimAnalisar(anterior, cabecote);
   }
+  if (ehEOF(cabecote))
+    return;
   return analisar(false, fita, ++i);
 }
 
 function fimAnalisar(anterior, cabecote) {
-  anterior && console.error('VRAY', anterior, cabecote);
+  anterior && console.info('fimAnalisar', anterior, cabecote);
+  if (anterior == 'SINAL') {
+    adicionarToken('SINAL');
+  }
   if (anterior == 'FLOAT') {
     adicionarToken('FLOAT');
   }
@@ -176,6 +180,11 @@ function fimAnalisar(anterior, cabecote) {
 }
 
 function adicionarToken(tipo) {
+  if (typeof token === 'undefined')
+  {
+    token = '';
+    return;
+  }
   var codigo = 0;
   switch(tipo) {
     case 'LITERAL':
@@ -204,7 +213,7 @@ function adicionarToken(tipo) {
   console.info('ADD:', tipo, token);
   tokens.push({
     linha: linha,
-    codigo: codigo, 
+    codigo: codigo,
     token: token
   });
   token = '';
@@ -266,10 +275,10 @@ function ehSeparadorDecimal(valor) {
   return valor === '.';
 }
 
-var alfabeto = ["a","b","c","d","e","f","g","h","i","j", 
-  "k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+var alfabeto = ["a","b","c","d","e","f","g","h","i","j",
+  "k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z", "_"];
 var numeros = ["0","1","2","3","4","5","6","7","8","9"];
-var sinais = [",",";","(",")","{","}","[","]","+",
+var sinais = [",",";", ":","(",")","{","}","[","]","+",
         "-","*","/","=","<",">","!","&","|"];
 var compostos = ["<",">", ":", "-"];
 var palavrasReservada = [];
