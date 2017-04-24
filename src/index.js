@@ -59,8 +59,8 @@ function analisar(anterior, fita, i) {
       if (ehSinal(cabecote) || ehEOF(cabecote))
       {
         fimAnalisar(anterior, cabecote);
+        anterior = 'SINAL';
       }
-      console.log('aff', token, cabecote);
       token += cabecote;
     }
     else
@@ -116,7 +116,6 @@ function analisar(anterior, fita, i) {
     }
   }
   else if (ehSinal(cabecote)) {
-
     if (ehComentario(cabecote) && (token == '--'))
     {
       return analisar('COMENTARIO_LINHA', fita, ++i);
