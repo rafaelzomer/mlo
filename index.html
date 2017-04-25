@@ -12,30 +12,34 @@
   <div class="tela">
     <div class="titulo">MLO 2017</div>
     <input class="botao" id="arquivo" type="file"></input>
-    <!-- <textarea id="codigo" class="codigo" rows="10">begin
-variavel1=variavel2+10
-"literal ="
-end
-if (n1 >= n2 and n1 <> n2) then
--- linha
--* blo
-co
-*-
-    </textarea> -->
-        <textarea id="codigo" class="codigo" rows="10">
-teste-1</textarea>
+    <textarea id="codigo" class="codigo" rows="10">
+1-2-3-4-5-6
+    </textarea>
     <button class="botao" id="compilar" type="button">Compilar</button>
     <hr>
+    Erros
     <table>
       <thead>
         <tr>
+          <th>Erro</th>
           <th>Linha</th>
-          <th>Token</th>
+        </tr>
+      </thead>
+      <tbody id="erros"></tbody>
+    </table>
+    <hr>
+    Análise
+    <table>
+      <thead>
+        <tr>
           <th>Código</th>
+          <th>Token</th>
+          <th>Linha</th>
         </tr>
       </thead>
       <tbody id="resultado"></tbody>
     </table>
+
   </div>
   <script src="index.js"></script>
 </body>
