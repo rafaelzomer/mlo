@@ -77,6 +77,10 @@ function analisar(anterior, fita, i) {
     token += cabecote;
   }
 
+  if (ehQuebraLinha(cabecote))
+  {
+    linha++;
+  }
   if (anterior == 'COMENTARIO_LINHA' && !ehQuebraLinha(cabecote) && !ehEOF(cabecote) ) {
     return analisar('COMENTARIO_LINHA', fita, ++i);
   }
@@ -94,6 +98,9 @@ function analisar(anterior, fita, i) {
       return;
     }
     return analisar('LITERAL', fita, ++i);
+  }
+  else if (anterior == 'LITERAL' && ehAspa(cabecote)) {
+    adicionarToken('RESEVIDENT');
   } else if (ehSinal(cabecote)) {
     if (cabecote == '-' && cabecoteProximo == '*') {
       return analisar('COMENTARIO_BLOCO', fita, ++i);
@@ -104,7 +111,7 @@ function analisar(anterior, fita, i) {
     }
     else
     {
-      if (ehSinal(cabecoteProximo))
+      if (ehComposto(cabecoteProximo))
       {
         return analisar('SINAL', fita, ++i);
       }
@@ -119,6 +126,11 @@ function analisar(anterior, fita, i) {
       adicionarToken(anterior);
     }
   } else if (ehLetra(cabecote)) {
+    if (ehSinal(cabecoteProximo))
+    {
+      adicionarToken('RESEVIDENT');
+    }
+
     return analisar('RESEVIDENT', fita, ++i);
   } else if (ehAspa(cabecote)) {
     if (anterior !== 'LITERAL') {
@@ -228,6 +240,7 @@ function adicionarToken(tipo) {
     codigo: codigo,
     token: token
   });
+  console.warn('hee', tokens[tokens.length-1] );
   token = '';
 }
 
@@ -257,7 +270,7 @@ function ehSinal(valor) {
 
 function ehLetra(valor) {
   for (var i = 0; i < alfabeto.length; i++) {
-    if (valor == alfabeto[i])
+    if (valor && valor.toLowerCase() == alfabeto[i])
       return true;
   }
   return false;
@@ -273,7 +286,7 @@ function ehNumero(valor) {
 
 function ehPalavraReservada(valor) {
   for (var i = 0; i < palavrasReservada.length; i++) {
-    if (valor == palavrasReservada[i])
+    if (valor.trim().toLowerCase() == palavrasReservada[i])
       return i;
   }
   return 0;
