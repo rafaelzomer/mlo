@@ -1,6 +1,7 @@
 import indexCss from './css/index.css';
 import tableCss from './css/table.css';
 import {analisadorLexico} from './analisadorLexico';
+import {analisadorSintatico} from './analisadorSintatico';
 
 var arquivo = document.getElementById('arquivo');
 var codigoTextArea = document.getElementById('codigo');
@@ -28,6 +29,7 @@ compilarButton.addEventListener('click', function(e) {
   analisadorLexico.init();
   analisadorLexico.analisar(false, fita, 0);
   var tokens = analisadorLexico.tokens;
+  analisadorSintatico.init(tokens);
   resultadoTable.innerHTML = "";
   for (var i = 0; i < tokens.length; i++) {
     var tk = tokens[i];

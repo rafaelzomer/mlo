@@ -153,27 +153,27 @@ function adicionarToken(tipo) {
       codigo = ehPalavraReservada('literal');
       var tam = this.token.length - 2;
       if (tam > SINTAXE_LITERAL_MAX) {
-        adicionarErro('O tamanho do literal (' + tam + ') ultrapassa o tamanho máximo específicado: ' + SINTAXE_LITERAL_MAX);
+        this.adicionarErro('O tamanho do literal (' + tam + ') ultrapassa o tamanho máximo específicado: ' + SINTAXE_LITERAL_MAX);
       }
       break;
     case 'INTEIRO':
       codigo = ehPalavraReservada('ninteiro');
       var i = parseInt(this.token);
       if (i < SINTAXE_INTEIRO_MIN) {
-        adicionarErro('O tamanho do inteiro (' + i + ') ultrapassa o tamanho máximo negativo específicado: ' + SINTAXE_INTEIRO_MIN);
+        this.adicionarErro('O tamanho do inteiro (' + i + ') ultrapassa o tamanho máximo negativo específicado: ' + SINTAXE_INTEIRO_MIN);
       }
       if (i > SINTAXE_INTEIRO_MAX) {
-        adicionarErro('O tamanho do inteiro (' + i + ') ultrapassa o tamanho máximo positivo específicado: ' + SINTAXE_INTEIRO_MAX);
+        this.adicionarErro('O tamanho do inteiro (' + i + ') ultrapassa o tamanho máximo positivo específicado: ' + SINTAXE_INTEIRO_MAX);
       }
       break;
     case 'FLOAT':
       codigo = ehPalavraReservada('nfloat');
       var i = parseFloat(this.token);
       if (i < SINTAXE_FLOAT_MIN) {
-        adicionarErro('O tamanho do float (' + i + ') ultrapassa o tamanho máximo negativo específicado: ' + SINTAXE_FLOAT_MIN);
+        this.adicionarErro('O tamanho do float (' + i + ') ultrapassa o tamanho máximo negativo específicado: ' + SINTAXE_FLOAT_MIN);
       }
       if (i > SINTAXE_FLOAT_MAX) {
-        adicionarErro('O tamanho do float (' + i + ') ultrapassa o tamanho máximo positivo específicado: ' + SINTAXE_FLOAT_MAX);
+        this.adicionarErro('O tamanho do float (' + i + ') ultrapassa o tamanho máximo positivo específicado: ' + SINTAXE_FLOAT_MAX);
       }
       break;
     case 'COMENTARIO_LINHA':
@@ -198,7 +198,6 @@ function adicionarToken(tipo) {
     codigo: codigo,
     token: this.token
   });
-  console.warn('hee', this.tokens[this.tokens.length-1] );
   this.token = '';
 }
 

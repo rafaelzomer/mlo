@@ -1,5 +1,13 @@
 //Tabela de parsing
 var tabParsing = [];
+
+for(var x = 0; x < 100; x++){
+  tabParsing[x] = [];
+  for(var y = 0; y < 100; y++){
+    tabParsing[x][y] = false;
+  }
+}
+
 tabParsing[46][25] = 1;
 tabParsing[47][3] = 2;
 tabParsing[47][8] = 2;
