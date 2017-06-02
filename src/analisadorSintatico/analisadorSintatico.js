@@ -19,17 +19,42 @@ function erro() {
 }
 
 function analisar() {
-  var topo = this.pilha.pop();
+  console.log('------------------------- analisar ------');
+  var topo = this.pilha[this.pilha.length-1];
+  // var topo = this.pilha.pop();
   console.log('topo', topo);
+
+  console.log('OQUE PODIA SER: ')
+  if (topo > DIVISAO)
+  {
+    for (var i = 0; i < 100; i++) {
+      var kk = tabelaParsing[topo][i];
+      if (kk)
+      {
+        console.log("1podiaser:", i, '/', palavraPorCodigo(i));
+      }
+    }
+  }
+  else
+  {
+    console.log("2podiaser:", topo, '/', palavraPorCodigo(topo));
+  }
 
   var token = this.tokens[this.posicao++];
   console.log('token', token);
 
+  if (!token)
+  {
+    console.warn('IXIE');
+    return;
+  }
+
   var valor = tabelaParsing[topo][token.codigo];
   console.log('valor', valor);
-  console.info('nolog', this.tokens.length ,'=', this.posicao);
+  // console.info('nolog', this.tokens.length ,'=', this.posicao);
   if (topo == token.codigo)
   {
+    this.pilha.pop();
     console.warn('this.pilhak', this.pilha);
     this.analisar();
     return;
@@ -64,17 +89,30 @@ function analisar() {
       }
     }
 
-    var top = this.pilha[this.pilha.length-1];
-    if (top == token.codigo)
-    {
-      // this.analisar();
-      // return;
-      this.pilha.pop();
-    }
-    console.log('->', token, );
+    // var top = this.pilha[this.pilha.length-1];
+    //   console.log('pOPS', top);
+    // if (top == token.codigo)
+    // {
+    //   this.pilha.pop();
+    //   // this.analisar();
+    //   // return;
+    //   // this.pilha.pop();
+    // }
+    // console.log('->', token, );
     // topo = this.pilha.pop();
   }
 
+  var top = this.pilha[this.pilha.length-1];
+  console.log('pOPS', top);
+  if (top == token.codigo)
+  {
+    this.pilha.pop();
+    // this.analisar();
+    // return;
+    // this.pilha.pop();
+  }
+
+    // this.pilha.pop();
   // if (topo <= DIVISAO) {
     console.warn('this.pilha1', this.pilha);
     this.analisar();
