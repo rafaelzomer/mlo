@@ -4,40 +4,40 @@ import {analisadorLexico} from './analisadorLexico';
 import {analisadorSintatico} from './analisadorSintatico';
 import swal from 'sweetalert';
 import googleCss from 'sweetalert/dist/sweetalert.css';
-// C:\projetos\mlo\node_modules\sweetalert\themes\google
+import CodeMirror from 'codemirror';
+import codeMirrorCss from 'codemirror/lib/codemirror.css';
 
 var arquivo = document.getElementById('arquivo');
-var codigoTextArea = document.getElementById('codigo');
-var compilarButton = document.getElementById('compilar');
+var botaoCompilar = document.getElementById('compilar');
+var botaoSalvar = document.getElementById('salvar');
 var resultadoTable = document.getElementById('resultado');
 var errosTable = document.getElementById('erros');
 
-arquivo.addEventListener('change', function(e) {
-  var file = arquivo.files[0];
-  var textType = /text.*/;
-
-  if (file.type.match(textType)) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      codigoTextArea.innerText = reader.result;
-    }
-    reader.readAsText(file);
-  } else {
-    alert("Seu browser não suporta arquivos locais");
-  }
+var editorTexto = CodeMirror.fromTextArea(document.getElementById('codigo'), {
+  lineNumbers: true,
 });
 
-compilarButton.addEventListener('click', function(e) {
-  var fita = codigoTextArea.value.trim().split('');
+arquivo.addEventListener('change', function(e) {
+  var file = arquivo.files[0];
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    editorTexto.getDoc().setValue(reader.result);
+  }
+  reader.readAsText(file);
+});
+
+botaoCompilar.addEventListener('click', function(e) {
+  // var fita = codigoTextArea.value.trim().split('');
+  var fita = editorTexto.getDoc().getValue().trim().split('');
   analisadorLexico.init();
   analisadorLexico.iniciar(fita);
   var tokens = analisadorLexico.tokens;
-  analisadorSintatico.init({tokens, debug: true});
+  analisadorSintatico.init({tokens, debug: false});
 
   try
   {
     analisadorSintatico.iniciar();
-    console.warn('OKEEEEEEEEEEE', swal);
     swal({
       title: "Sucesso",
       text: "Compilado com sucesso!",
@@ -45,7 +45,6 @@ compilarButton.addEventListener('click', function(e) {
     });
   }
   catch(err) {
-    console.error(err, 'esperava: ', analisadorSintatico.esperava);
     let palavras = analisadorSintatico.esperava.map(item => item.palavra);
     let e = analisadorSintatico.encontrou;
     swal({

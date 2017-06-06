@@ -8,27 +8,39 @@ body{
 }
 table{border-collapse:collapse;border-spacing:0}
 hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}
-.botao {
-  background-color: #0366d6;
-  color: #fff;
-  cursor: pointer;
-  padding: .625em;
-  border: none;
-  border-radius: 3px; 
-}
-.codigo {
+
+.info-linha {
   width: 100%;
+  float: left;
+}
+.info-direita,
+.info-esquerda {
+  width: 48%;
+  padding: 4px 8px;
+}
+
+.info-esquerda {
+  float: left;
+  text-align: left;
+}
+.info-direita {
+  float: right;
+  text-align: right;
+}
+
+.codigo {
   font-size: 14px;
   border: 1px solid #ccc;
   margin: 10px 0;
 }
 .titulo {
-  margin: 10px 0;
+  margin: 5px 0;
+  font-weight: 800;
 }
 
 @media screen and (min-width: 600px) {
   .tela {
-    width: 500px;
+    width: 800px;
     margin: auto;
   }
 }

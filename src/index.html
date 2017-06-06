@@ -8,18 +8,33 @@
 </head>
 <body>
   <div class="tela">
-    <div class="titulo">MLO 2017</div>
-    <input class="botao" id="arquivo" type="file"></input>
-    <textarea id="codigo" class="codigo" rows="10">
+    <div class="info-linha">
+      <div class="info-esquerda">
+        <div class="titulo">MLO 2017</div>
+      </div>
+      <div class="info-direita">
+        <a href="https://github.com/rafaelzomer/mlo">Github</a>
+      </div>
+    </div>
+    <div class="info-linha">
+      <div class="info-esquerda">
+        <input class="botao" id="arquivo" type="file"></input>
+      </div>
+      <div class="info-direita">
+        <button class="botao" id="compilar" type="button">Compilar</button>
+      </div>
+    </div>
+    <div class="info-linha codigo">
+      <textarea id="codigo" rows="10">
 begin(teste);
-    var x:float;
-    begin
-      y:=15;;
-      write("teste")
-    fim
+  var x:float;
+  begin
+    y:=15;;
+    write("teste")
+  fim
 end
-    </textarea>
-    <button class="botao" id="compilar" type="button">Compilar</button>
+      </textarea>
+    </div>
     <hr>
     Erros
     <table>
