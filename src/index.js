@@ -2,6 +2,9 @@ import indexCss from './css/index.css';
 import tableCss from './css/table.css';
 import {analisadorLexico} from './analisadorLexico';
 import {analisadorSintatico} from './analisadorSintatico';
+import swal from 'sweetalert';
+import googleCss from 'sweetalert/dist/sweetalert.css';
+// C:\projetos\mlo\node_modules\sweetalert\themes\google
 
 var arquivo = document.getElementById('arquivo');
 var codigoTextArea = document.getElementById('codigo');
@@ -27,9 +30,32 @@ arquivo.addEventListener('change', function(e) {
 compilarButton.addEventListener('click', function(e) {
   var fita = codigoTextArea.value.trim().split('');
   analisadorLexico.init();
-  analisadorLexico.analisar(false, fita, 0);
+  analisadorLexico.iniciar(fita);
   var tokens = analisadorLexico.tokens;
-  analisadorSintatico.init(tokens);
+  analisadorSintatico.init({tokens, debug: true});
+
+  try
+  {
+    analisadorSintatico.iniciar();
+    console.warn('OKEEEEEEEEEEE', swal);
+    swal({
+      title: "Sucesso",
+      text: "Compilado com sucesso!",
+      type: "success",
+    });
+  }
+  catch(err) {
+    console.error(err, 'esperava: ', analisadorSintatico.esperava);
+    let palavras = analisadorSintatico.esperava.map(item => item.palavra);
+    let e = analisadorSintatico.encontrou;
+    swal({
+      title: "Erro!",
+      text: '\nErro, token inválido: \n'+e.token
+            +', linha: '+e.linha
+            +'\n\nEsperava:\n'+ palavras.join('\n'),
+      type: "error"
+    });
+  }
   resultadoTable.innerHTML = "";
   for (var i = 0; i < tokens.length; i++) {
     var tk = tokens[i];

@@ -25,6 +25,10 @@ function init() {
   this.linha = 1;
 }
 
+function iniciar(fita) {
+  this.analisar(false, fita, 0)
+}
+
 function analisar(anterior, fita, i) {
   var cabecoteAnterior = fita[i - 1];
   var cabecote = fita[i];
@@ -193,11 +197,16 @@ function adicionarToken(tipo) {
         codigo = ehPalavraReservada('ident');
       break;
   }
-  this.tokens.push({
-    linha: this.linha,
-    codigo: codigo,
-    token: this.token
-  });
+  // não adiciona comentários a lista de tokens
+  if (codigo !== 'COMENTARIO_BLOCO' && codigo !== 'COMENTARIO_LINHA')
+  {
+    let tk = this.token.replace(/(\r\n|\n|\r)/gm,"");
+    this.tokens.push({
+      linha: this.linha,
+      codigo: codigo,
+      token: tk
+    });
+  }
   this.token = '';
 }
 
@@ -206,6 +215,7 @@ let analisadorLexico = {
   tokens: [],
   erros: [],
   init,
+  iniciar,
   analisar,
   adicionarToken,
   adicionarErro,

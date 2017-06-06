@@ -1,162 +1,120 @@
 import {tabelaParsing, tabelaCorrespondencia} from '../tabelaParsing';
 import {palavraPorCodigo} from '../palavrasReservadas';
-const VAZIO = 44;
+const FINAL = 44;
+const VAZIO = 18;
 const DIVISAO = 45;
 
-function init(tokens) {
+function init({tokens, debug}) {
   this.tokens = tokens;
-  this.posicao = 0;
-  console.log('--2.', tabelaCorrespondencia);
-  this.pilha.push(44);
-  this.pilha.push(46);
-
-  this.analisar();
-
+  this.debug = debug;
 }
 
-function erro() {
-  console.error('ERROR');
+function iniciar() {
+  this.posicao = 0;
+  this.antigoTopo = -1;
+  this.stack = 0;
+  this.esperava = [];
+  this.encontrou = false;
+  this.pilha.push(44);
+  this.pilha.push(46);
+  this.analisar()
 }
 
 function analisar() {
-  console.log('------------------------- analisar ------');
+  if (this.stack > 3)
+  {
+    //Se o topo começar a se repetir muito, retorna um erro de estouro de pilha;
+    throw 'Stack Overflow';
+    return;
+  }
+  this.debug && console.log('[', this.stack ,']', '------------------------- analisar ------');
+  this.esperava = [];
   var topo = this.pilha[this.pilha.length-1];
-  // var topo = this.pilha.pop();
-  console.log('topo', topo);
+  if (topo == this.antigoTopo) {
+    this.stack++;
+  }
+  this.antigoTopo = topo;
+  this.debug && console.log('t1-Topo: ', topo);
 
-  console.log('OQUE PODIA SER: ')
   if (topo > DIVISAO)
   {
+    this.debug && console.log('O que poderia ser: ')
     for (var i = 0; i < 100; i++) {
-      var kk = tabelaParsing[topo][i];
-      if (kk)
+      var simbolo = tabelaParsing[topo][i];
+      if (simbolo)
       {
-        console.log("1podiaser:", i, '/', palavraPorCodigo(i));
+        this.esperava.push({
+          simbolo: simbolo,
+          palavra: palavraPorCodigo(i)
+        });
+        this.debug && console.log(i, '/', palavraPorCodigo(i));
       }
     }
   }
   else
   {
-    console.log("2podiaser:", topo, '/', palavraPorCodigo(topo));
+    this.esperava.push({
+      simbolo: topo,
+      palavra: palavraPorCodigo(topo)
+    });
+    this.debug && console.log("poderia ser: ", topo, '-', palavraPorCodigo(topo));
   }
 
-  var token = this.tokens[this.posicao++];
-  console.log('token', token);
+  if (topo == FINAL && this.pilha.length <= 1 ) {
+    this.debug && console.log('SUCCESS');
+    return true;
+  }
 
-  if (!token)
+  var token = this.tokens[this.posicao];
+  this.debug && console.log('t1-Token: ', token);
+  if (this.tokens[this.posicao-1] !== this.encontrou)
   {
-    console.warn('IXIE');
-    return;
+    this.encontrou = token;
   }
 
   var valor = tabelaParsing[topo][token.codigo];
-  console.log('valor', valor);
-  // console.info('nolog', this.tokens.length ,'=', this.posicao);
+  this.debug && console.log('t1-Valor: ', valor);
+
+  if (topo == VAZIO)
+  {
+    this.pilha.pop();
+  }
   if (topo == token.codigo)
   {
     this.pilha.pop();
-    console.warn('this.pilhak', this.pilha);
+    this.debug && console.warn('t1-Pilha: ', this.pilha);
+    this.posicao++;
     this.analisar();
     return;
-    // topo = this.pilha.pop();
-    // token =
-    // console.log('[topo', topo);
-    // console.log('[token', token);
-    // console.warn('[this.pilha1', this.pilha);
   }
 
+  // if (!valor)
+  // {
+  //   this.debug && console.warn('NA-Pilha: ', this.pilha);
+  //   this.analisar();
+  //   return;
+  // }
 
-  if (topo == VAZIO && this.tokens.length == this.posicao-1 ) {
-    console.log('SUCCESS');
-    return;
-  }
-  else if (this.pilha.length < 1) {
-    console.log('VAZIA');
-    return;
-  }
-  else if (topo == VAZIO) {
-    console.log('acabou erro');
-    return;
-  }
-  else if (topo > DIVISAO) {
-    console.warn('t1', topo);
+  if (topo > DIVISAO) {
+    this.debug && console.warn('t1', topo);
     var corresps = tabelaCorrespondencia[valor];
     if (corresps)
     {
+      this.pilha.pop();
       for (var i = corresps.length - 1; i >= 0; i--) {
-        console.log(corresps[i], '/', palavraPorCodigo(corresps[i]));
+        this.debug && console.log('Adiciona na pilha: ', corresps[i], '-', palavraPorCodigo(corresps[i]));
         this.pilha.push(corresps[i]);
       }
     }
-
-    // var top = this.pilha[this.pilha.length-1];
-    //   console.log('pOPS', top);
-    // if (top == token.codigo)
-    // {
-    //   this.pilha.pop();
-    //   // this.analisar();
-    //   // return;
-    //   // this.pilha.pop();
-    // }
-    // console.log('->', token, );
-    // topo = this.pilha.pop();
   }
-
-  var top = this.pilha[this.pilha.length-1];
-  console.log('pOPS', top);
-  if (top == token.codigo)
-  {
-    this.pilha.pop();
-    // this.analisar();
-    // return;
-    // this.pilha.pop();
-  }
-
-    // this.pilha.pop();
-  // if (topo <= DIVISAO) {
-    console.warn('this.pilha1', this.pilha);
-    this.analisar();
-  // }
-  // else
-  // {
-  //   console.warn('this.pilha2', this.pilha);
-  //   this.analisar();
-  // }
-
-    // if (token.codigo == topo)
-    // {
-    //   console.warn('t2');
-    //   this.analisar();
-    // }
-    // else
-    // {
-    //   console.warn('t3');
-    //   this.erro();
-    // }
-  // }
-  // else {
-  //   this.erro();
-  // }
-
-  // var valor = tabelaParsing[topo][token.codigo];
-  // console.log('valor', valor);
-
-  // var corresps = tabelaCorrespondencia[valor];
-  // console.log('corresps', corresps);
-  // if (corresps)
-  // {
-  //   for (var i = corresps.length - 1; i >= 0; i--) {
-  //     this.pilha.push(corresps[i]);
-  //   }
-  // }
-
-  // console.warn('pilha', this.pilha);
+  this.debug && console.warn('t2-Pilha: ', this.pilha);
+  this.analisar();
 }
 
 let analisadorSintatico = {
   init,
   analisar,
-  erro,
+  iniciar,
   pilha: []
 }
 
