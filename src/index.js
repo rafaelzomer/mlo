@@ -28,12 +28,11 @@ arquivo.addEventListener('change', function(e) {
 });
 
 botaoCompilar.addEventListener('click', function(e) {
-  // var fita = codigoTextArea.value.trim().split('');
   var fita = editorTexto.getDoc().getValue().trim().split('');
   analisadorLexico.init();
   analisadorLexico.iniciar(fita);
   var tokens = analisadorLexico.tokens;
-  analisadorSintatico.init({tokens, debug: false});
+  analisadorSintatico.init({tokens});
 
   try
   {

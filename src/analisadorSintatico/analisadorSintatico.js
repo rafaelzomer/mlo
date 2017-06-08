@@ -15,6 +15,7 @@ function iniciar() {
   this.stack = 0;
   this.esperava = [];
   this.encontrou = false;
+  this.pilha = [];
   this.pilha.push(44);
   this.pilha.push(46);
   this.analisar()
@@ -61,12 +62,12 @@ function analisar() {
   }
 
   if (topo == FINAL && this.pilha.length <= 1 ) {
-    this.debug && console.log('SUCCESS');
+    this.debug && console.log('Sucesso');
     return true;
   }
 
   var token = this.tokens[this.posicao];
-  this.debug && console.log('t1-Token: ', token);
+  this.debug && console.log('t1-Token: ', this.posicao, token);
   if (this.tokens[this.posicao-1] !== this.encontrou)
   {
     this.encontrou = token;
